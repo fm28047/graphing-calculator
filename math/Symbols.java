@@ -5,7 +5,4 @@ public class Symbols {
         LEFT,
         RIGHT
     }
-    public enum variables {
-        X
-    }
 }

@@ -20,7 +20,10 @@ public enum Operators {
     ARCTAN,
     SECANT,
     COSECANT,
-    COTANGENT;
+    COTANGENT,
+    ARCSEC,
+    ARCCSC,
+    ARCCOT;
 
     public static double operate(Operators type, double num1, double num2) {
         switch (type) {
@@ -58,16 +61,73 @@ public enum Operators {
                 return Math.pow(Math.sin(num1), -1);
             case COTANGENT:
                 return Math.pow(Math.tan(num1), -1);
+            case ARCSEC:
+                return Math.acos(1/num1);
+            case ARCCSC:
+                return Math.asin(1/num1);
+            case ARCCOT:
+                return Math.atan(1/num1);
             default:
                 return 0;
         }
     }
 
+    public static double operate(Operators type, double num1) {
+        return operate(type, num1, 0);
+    }
+
     public static int argsRequired(Operators type) {
         switch (type) {
             case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case MODULUS: case EXPONENT: case INVEXP: case LOG: return 2;
-            case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case SECANT: case COSECANT: case COTANGENT: return 1;
+            case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case SECANT: case COSECANT: case COTANGENT: case ARCSEC: case ARCCSC: case ARCCOT: return 1;
             default: return 0;
+        }
+    }
+
+    public static String toString(Operators type) {
+        switch (type) {
+                case ADD:
+                    return "+";
+                case ARCCOS:
+                    return "arccos";
+                case ARCCOT:
+                    return "arccot";
+                case ARCCSC:
+                    return "arccsc";
+                case ARCSEC:
+                    return "arcsec";
+                case ARCSIN:
+                    return "arcsin";
+                case ARCTAN:
+                    return "arctan";
+                case COSECANT:
+                    return "csc";
+                case COSINE:
+                    return "cos";
+                case COTANGENT:
+                    return "cot";
+                case DIVIDE:
+                    return "/";
+                case EXPONENT:
+                    return "^";
+                case INVEXP:
+                    return "root_";
+                case LOG:
+                    return "log_";
+                case MODULUS:
+                    return "mod";
+                case MULTIPLY:
+                    return "*";
+                case SECANT:
+                    return "sec";
+                case SINE:
+                    return "sin";
+                case SUBTRACT:
+                    return "-";
+                case TANGENT:
+                    return "tan";
+                default:
+                    return null;
         }
     }
 }

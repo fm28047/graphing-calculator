@@ -5,9 +5,22 @@ import java.util.ArrayList;
 public class Expression {
     private ArrayList<Object> expression = new ArrayList<Object>();
 
-    public Expression(String e) {
-        for (int index = 1; e.length() > 0; index++) {
-            
+    public Expression(String s) {
+        String testString;
+        for (int index = 1; s.length() > 0; index++) {
+            testString = s.substring(0, index);
+            try {
+                Double.parseDouble(testString);
+            } catch (NumberFormatException e) {
+                // if it gives error after a doing it right at least once, it must be a number
+                if (index != 1) {
+                    expression.add(s.substring(0, index-1));
+                    s = s.substring(index-1, s.length());
+                }
+                else {
+
+                }
+            }
         }
     }
 
@@ -18,7 +31,8 @@ public class Expression {
     public String toString() {
         String result = "";
         for (Object o : expression) {
-            if (o instanceof Double) result += o;
+            if (o instanceof Double)
+                result += o;
 
             else if (o instanceof Symbols.parentheses)
                 switch ((Symbols.parentheses) o) {
@@ -26,64 +40,11 @@ public class Expression {
                     case RIGHT: result += ")"; break;
                 }
 
-            else if (o instanceof Symbols.variables)
-                switch ((Symbols.variables) o) {
-                    case X: result += "x"; break;
-                }
+            else if (o instanceof MathVariable)
+                result += ((MathVariable) o).getName();
 
-            else if (o instanceof Operators) switch ((Operators) o) {
-                case ADD:
-                    result += "+";
-                    break;
-                case ARCCOS:
-                    result += "arccos";
-                    break;
-                case ARCSIN:
-                    result += "arcsin";
-                    break;
-                case ARCTAN:
-                    result += "arctan";
-                    break;
-                case COSECANT:
-                    result += "csc";
-                    break;
-                case COSINE:
-                    result += "cos";
-                    break;
-                case COTANGENT:
-                    result += "cot";
-                    break;
-                case DIVIDE:
-                    result += "/";
-                    break;
-                case EXPONENT:
-                    result += "^";
-                    break;
-                case INVEXP:
-                    result += "root_";
-                    break;
-                case LOG:
-                    result += "log_";
-                    break;
-                case MODULUS:
-                    result += "mod";
-                    break;
-                case MULTIPLY:
-                    result += "*";
-                    break;
-                case SECANT:
-                    result += "sec";
-                    break;
-                case SINE:
-                    result += "sin";
-                    break;
-                case SUBTRACT:
-                    result += "-";
-                    break;
-                case TANGENT:
-                    result += "tan";
-                    break;
-            };
+            else if (o instanceof Operators)
+                result += Operators.toString((Operators) o);
         }
         return result;
     }
