@@ -129,5 +129,5 @@ public enum Operators {
                 default:
                     return null;
         }
-    }
+    }    
 }

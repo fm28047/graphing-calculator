@@ -16,7 +16,13 @@ public class Main {
         for (Object b : o) {
             a.add(b);
         }
-        Expression e = new Expression(a);
+        Expression e;
+        try {
+            e = new Expression("2^x"); // TODO fix stuff like 2^cbrt(x) most likely error with ^ and c next to each other
+        } catch (Expression.ParseError e2) {
+            e2.printStackTrace();
+            return;
+        }
         System.out.println(e.toString());
     }
 }
