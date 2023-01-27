@@ -1,28 +1,19 @@
 import math.*;
+import math.Expression.CalculationError;
+import math.Expression.ParseError;
+
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        // System.out.println(Operators.operate(Operators.MODULUS, 5, 3));
-        java.util.ArrayList<Object> a = new java.util.ArrayList<Object>();
-        Object[] o = {
-            5.5,
-            Operators.ADD,
-            3.5,
-            Operators.SINE,
-            Symbols.parentheses.LEFT,
-            Math.PI,
-            Symbols.parentheses.RIGHT
-        };
-        for (Object b : o) {
-            a.add(b);
-        }
-        Expression e;
-        try {
-            e = new Expression("xmodroot_1.5(4^2)^csc(lnx)");
-        } catch (Expression.ParseError e2) {
-            e2.printStackTrace();
-            return;
-        }
-        System.out.println(e.toString());
+
+    public static String input() {
+        Scanner s = new Scanner(System.in);
+        String a = s.nextLine();
+        s.close();
+        return a;
+    }
+    public static void main(String[] args) throws ParseError, CalculationError{
+        Expression e = new Expression(input());
+        System.out.println(e.eval(0)); // TODO fix -3(5^2 - 2(5-2) / 3 + 2)
     }
 }

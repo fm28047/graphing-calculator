@@ -40,9 +40,9 @@ public enum Operators {
             case EXPONENT:
                 return Math.pow(num1, num2);
             case INVEXP:
-                return operate(EXPONENT, num1, Math.pow(num2, -1));
+                return operate(EXPONENT, num2, Math.pow(num1, -1));
             case LOG:
-                return Math.log(num1) / Math.log(num2);
+                return Math.log(num2) / Math.log(num1);
             case SINE:
                 return Math.sin(num1);
             case COSINE:
