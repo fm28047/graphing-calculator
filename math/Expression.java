@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 public class Expression {
     private ArrayList<Object> expression = new ArrayList<Object>();
+    static final String[] SPECIAL_OPERATORS = {"+", "/", "^", "mod", "*", "-"};
 
+    // parses string to expression
     public Expression(String s) throws ParseError {
         s = s.toLowerCase().replace(" ", "");
         String testString;
@@ -53,10 +55,17 @@ public class Expression {
                 else {
                     int i = -1;
                     char c = '\u0000';
+                    boolean specialOperation = false;
                     try {
-                        while ((!(c <= '9' && c >= '0') && c != '(') && i < s.length()-1) {
+                        while ((!(c <= '9' && c >= '0') && c != '(') && i < s.length()-1 && !specialOperation) {
                             i++;
                             c = s.charAt(i);
+                            for (String j : SPECIAL_OPERATORS)
+                                if (s.substring(i).startsWith(j)) {
+                                    i+=j.length();
+                                    specialOperation = true;
+                                    break;
+                                }
                         }
                     } catch (StringIndexOutOfBoundsException e2) {
                         throw new ParseError();
@@ -216,7 +225,35 @@ public class Expression {
 
     public class ParseError extends Exception {
         public ParseError() {
-            super("Invalid string.");
+            super("Invalid string to parse.");
+        }
+    }
+
+    public double eval(double valueOfX) {
+        /* order:
+         * first, replace variables with their value
+         * 1. brackets
+         * 2. special functions like sine, sqrt, log, etc.
+         * 3. exponents
+         * 4. *, /, mod
+         * 5. +, -
+         */
+
+        ArrayList<Object> solvedExpression = new ArrayList<Object>(expression);
+
+        // 0. replace variable value
+        // TODO do this
+
+        // 1. brackets - eval other expressions
+        for (int i = 0; i < solvedExpression.size(); i++) {
+            if (!(solvedExpression.get(i) instanceof Expression)) continue;
+            else solvedExpression.set(i, ((Expression) solvedExpression.get(i)).eval(valueOfX));
+        }
+
+        // 2. special functions
+        for (int i = 0; i < solvedExpression.size(); i++) {
+            if (!(solvedExpression.get(i) instanceof Operators)) continue;
+            // if 
         }
     }
 }

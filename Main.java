@@ -18,7 +18,7 @@ public class Main {
         }
         Expression e;
         try {
-            e = new Expression("2^x"); // TODO fix stuff like 2^cbrt(x) most likely error with ^ and c next to each other
+            e = new Expression("xmodroot_1.5(4^2)^csc(lnx)");
         } catch (Expression.ParseError e2) {
             e2.printStackTrace();
             return;
