@@ -246,7 +246,6 @@ public class Expression {
 
     public double eval(double valueOfX) throws CalculationError {
         /* order:
-         * actually first, replace minus and number with plus minus and number
          * first, replace variables with their value
          * 1. brackets
          * 2. special functions like sine, sqrt, log, etc.
@@ -257,16 +256,7 @@ public class Expression {
 
         ArrayList<Object> solvedExpression = new ArrayList<Object>(expression);
 
-        // -1. fix the annoying bug
-        for (int i = 0; i < solvedExpression.size(); i++) {
-            if (i+1 < solvedExpression.size()) {
-                if (solvedExpression.get(i) == Operators.SUBTRACT) {
-                    if (i != 0) solvedExpression.add(i, Operators.ADD);
-                    solvedExpression.add((i == 0) ? i : i+1, Double.valueOf(0));
-                    i+=(i == 0) ? 1 : 2;
-                }
-            }
-        }
+        if (solvedExpression.size() == 0) return 0;
 
         // 0. replace variable value
         for (int i = 0; i < solvedExpression.size(); i++) {
@@ -302,6 +292,27 @@ public class Expression {
             }
         }
 
+        // 2.5. replace subtractions with negative numbers when applicable
+        // it does this by finding an operation to the left of a subtraction operation
+        for (int i = 0; i < solvedExpression.size(); i++) {
+            if (i == 0 || solvedExpression.get(i-1) instanceof Operators)
+                if (solvedExpression.get(i) == Operators.SUBTRACT) {
+                    solvedExpression.remove(i);
+                    // get next double and multiply it by -1
+                    boolean error = true;
+                    for (int j = 0; j < solvedExpression.size(); j++) {
+                        if (solvedExpression.get(j) instanceof Double) {
+                            solvedExpression.set(j, ((Double) solvedExpression.get(j)) * -1);
+                            i--;
+                            error = false;
+                            break;
+                        }
+                    }
+                    if (error) throw new CalculationError();
+                }
+            
+        }
+
         // 3. exponents
         for (int i = 0; i < solvedExpression.size(); i++) {
             if (solvedExpression.get(i).equals(Operators.EXPONENT)) {
@@ -310,6 +321,7 @@ public class Expression {
                     solvedExpression.set(i, solution);
                     solvedExpression.remove(i+1);
                     solvedExpression.remove(i-1);
+                    i--;
                 } catch (Throwable e) {
                     throw new CalculationError();
                 } 
@@ -320,21 +332,21 @@ public class Expression {
         for (int i = 0; i < solvedExpression.size(); i++) {
 
             // case 1: two numbers next to each other
-            if (i+1 < solvedExpression.size()) {
-                if ((solvedExpression.get(i) instanceof Double) && (solvedExpression.get(i+1) instanceof Double)) {
-                    Double solution = Operators.operate(Operators.MULTIPLY, (Double) solvedExpression.get(i), (Double) solvedExpression.get(i+1));
-                    solvedExpression.set(i, solution);
-                    solvedExpression.remove(i+1);
-                }
+            if (i+1 < solvedExpression.size() && (solvedExpression.get(i) instanceof Double) && (solvedExpression.get(i+1) instanceof Double)) {
+                Double solution = Operators.operate(Operators.MULTIPLY, (Double) solvedExpression.get(i), (Double) solvedExpression.get(i+1));
+                solvedExpression.set(i, solution);
+                solvedExpression.remove(i+1);
+                i--;
             }
 
             // case 2: multiplication signs
-            if (solvedExpression.get(i).equals(Operators.MULTIPLY) || solvedExpression.get(i).equals(Operators.DIVIDE) || solvedExpression.get(i).equals(Operators.MODULUS)) {
+            else if (solvedExpression.get(i).equals(Operators.MULTIPLY) || solvedExpression.get(i).equals(Operators.DIVIDE) || solvedExpression.get(i).equals(Operators.MODULUS)) {
                 try {
                     Double solution = Operators.operate((Operators) solvedExpression.get(i), (Double) solvedExpression.get(i-1), (Double) solvedExpression.get(i+1));
                     solvedExpression.set(i, solution);
                     solvedExpression.remove(i+1);
                     solvedExpression.remove(i-1);
+                    i--;
                 } catch (Throwable e) {
                     throw new CalculationError();
                 } 
@@ -349,13 +361,25 @@ public class Expression {
                     solvedExpression.set(i, solution);
                     solvedExpression.remove(i+1);
                     solvedExpression.remove(i-1);
+                    i--;
                 } catch (Throwable e) {
                     throw new CalculationError();
-                } 
+                }
             }
         }
 
-        if (solvedExpression.size() != 1 || !(solvedExpression.get(0) instanceof Double)) throw new CalculationError();
+        if (solvedExpression.size() != 1 || !(solvedExpression.get(0) instanceof Double)) {
+            System.out.println(this.toStringDebug());
+            throw new CalculationError();
+        }
         return (double) solvedExpression.get(0);
+    }
+
+    public String toStringDebug() {
+        ArrayList<Object> a = new ArrayList<Object>(expression);
+        for (int i = 0; i < a.size(); i++) {
+            if (a.get(i) instanceof Expression) a.set(i, ((Expression)a.get(i)).toStringDebug());
+        }
+        return a.toString();
     }
 }

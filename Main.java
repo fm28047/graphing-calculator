@@ -12,8 +12,9 @@ public class Main {
         s.close();
         return a;
     }
-    public static void main(String[] args) throws ParseError, CalculationError{
+    public static void main(String[] args) throws ParseError, CalculationError {
         Expression e = new Expression(input());
-        System.out.println(e.eval(0)); // TODO fix -3(5^2 - 2(5-2) / 3 + 2)
+        System.out.println(e.toStringDebug());
+        System.out.println(e.eval(2)); // TODO fix -3(5^2 - 2(5-2) / 3 + 2)
     }
 }
