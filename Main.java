@@ -1,3 +1,8 @@
+/*
+ * Micah Friedman
+ * Copyright (C) 2023
+ */
+
 import console.console;
 
 public class Main {

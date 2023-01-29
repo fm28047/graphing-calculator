@@ -1,3 +1,8 @@
+/*
+ * Micah Friedman
+ * Copyright (C) 2023
+ */
+
 package console;
 
 public class colors {

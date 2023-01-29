@@ -1,3 +1,8 @@
+/*
+ * Micah Friedman
+ * Copyright (C) 2023
+ */
+
 package math;
 
 import java.util.ArrayList;
