@@ -11,6 +11,8 @@ public enum Operators {
     EXPONENT,
     INVEXP,
     LOG,
+    FACTORIAL,
+    ABSOLUTE_VALUE,
     // trig
     SINE,
     COSINE,
@@ -25,7 +27,7 @@ public enum Operators {
     ARCCSC,
     ARCCOT;
 
-    public static double operate(Operators type, double num1, double num2) {
+    public static Double operate(Operators type, double num1, double num2) {
         switch (type) {
             case ADD:
                 return num1 + num2;
@@ -50,8 +52,10 @@ public enum Operators {
             case TANGENT:
                 return Math.tan(num1);
             case ARCSIN:
+                if (num1 > 1 || num1 < -1) return null;
                 return Math.asin(num1);
             case ARCCOS:
+                if (num1 > 1 || num1 < -1) return null;
                 return Math.acos(num1);
             case ARCTAN:
                 return Math.atan(num1);
@@ -62,14 +66,19 @@ public enum Operators {
             case COTANGENT:
                 return Math.pow(Math.tan(num1), -1);
             case ARCSEC:
+                if (num1 < 1 && num1 > -1) return null;
                 return Math.acos(1/num1);
             case ARCCSC:
+                if (num1 < 1 && num1 > -1) return null;
                 return Math.asin(1/num1);
             case ARCCOT:
                 return Math.atan(1/num1);
-            default:
-                return 0;
+            case FACTORIAL:
+                return Gamma.gamma(num1+1);
+            case ABSOLUTE_VALUE:
+                return Math.abs(num1);
         }
+        return 0d;
     }
 
     public static double operate(Operators type, double num1) {
@@ -79,9 +88,9 @@ public enum Operators {
     public static int argsRequired(Operators type) {
         switch (type) {
             case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case MODULUS: case EXPONENT: case INVEXP: case LOG: return 2;
-            case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case SECANT: case COSECANT: case COTANGENT: case ARCSEC: case ARCCSC: case ARCCOT: return 1;
-            default: return 0;
+            case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case SECANT: case COSECANT: case COTANGENT: case ARCSEC: case ARCCSC: case ARCCOT: case FACTORIAL: case ABSOLUTE_VALUE: return 1;
         }
+        return 0;
     }
 
     public static String toString(Operators type) {
@@ -126,8 +135,18 @@ public enum Operators {
                     return "-";
                 case TANGENT:
                     return "tan";
-                default:
-                    return null;
+                case FACTORIAL:
+                    return "!";
+                case ABSOLUTE_VALUE:
+                    return "abs";
+        }
+        return null;
+    }
+
+    public static boolean isTrig(Operators operator) {
+        switch (operator) {
+            case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case COSECANT: case SECANT: case COTANGENT: case ARCCSC: case ARCSEC: case ARCCOT: return true;
+            default: return false;
         }
     }    
 }

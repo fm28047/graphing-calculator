@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 public class Expression {
     public ArrayList<Object> expression = new ArrayList<Object>();
-    static final String[] SPECIAL_OPERATORS = {"+", "/", "^", "mod", "*", "-"};
-    static final Operators[] SPECIAL_OPERATORS2 = {Operators.ADD, Operators.DIVIDE, Operators.EXPONENT, Operators.MODULUS, Operators.MULTIPLY, Operators.SUBTRACT};
+    static final String[] SPECIAL_OPERATORS = {"+", "/", "^", "mod", "*", "-", "!"};
+    static final Operators[] SPECIAL_OPERATORS2 = {Operators.ADD, Operators.DIVIDE, Operators.EXPONENT, Operators.MODULUS, Operators.MULTIPLY, Operators.SUBTRACT, Operators.FACTORIAL};
+
+    private boolean degreesMode = false;
 
     // parses string to expression
     public Expression(String s) throws ParseError {
@@ -41,7 +43,7 @@ public class Expression {
                             if (s.charAt(i) == '(') parenthesesLevel++;
                             else if (s.charAt(i) == ')') parenthesesLevel--;
                             if (parenthesesLevel == 0) {
-                                expression.add(new Expression(s.substring(1, i)));
+                                expression.add(new Expression(s.substring(1, i), degreesMode));
                                 s = s.substring(i+1);
                                 break;
                             }
@@ -67,11 +69,11 @@ public class Expression {
                                     specialOperation = true;
                                     break;
                                 }
-                            if (s.substring(i).startsWith("pi")) {
+                            if (s.substring(i).startsWith("pi") && i == 0) {
                                 i += 2;
                                 specialOperation = true;
                             }
-                            else if (s.substring(i).startsWith("e")) {
+                            else if (s.substring(i).startsWith("e") && i == 0) {
                                 i += 1;
                                 specialOperation = true;
                             }
@@ -83,6 +85,10 @@ public class Expression {
                     switch (operation) {
                         case "+":
                             expression.add(Operators.ADD);
+                            s = s.substring(i, s.length());
+                            continue;
+                        case "abs":
+                            expression.add(Operators.ABSOLUTE_VALUE);
                             s = s.substring(i, s.length());
                             continue;
                         case "arccos":
@@ -181,17 +187,16 @@ public class Expression {
                             expression.add(Special.E);
                             s = s.substring(i, s.length());
                             continue;
-                        case "%":
-                            expression.add(Operators.MULTIPLY);
-                            expression.add(0.01d);
-                            s = s.substring(i, s.length());
-                            continue;
                         case "e":
                             expression.add(Special.E);
                             s = s.substring(i, s.length());
                             continue;
                         case "pi":
                             expression.add(Special.PI);
+                            s = s.substring(i, s.length());
+                            continue;
+                        case "!":
+                            expression.add(Operators.FACTORIAL);
                             s = s.substring(i, s.length());
                             continue;
                     }
@@ -212,6 +217,11 @@ public class Expression {
 
     public Expression(ArrayList<Object> e) {
         this.expression = new ArrayList<Object>(e);
+    }
+
+    public Expression(String s, boolean usingDegrees) throws ParseError {
+        this(s);
+        degreesMode = usingDegrees;
     }
 
     public String toString() {
@@ -272,6 +282,19 @@ public class Expression {
             else solvedExpression.set(i, ((Expression) solvedExpression.get(i)).eval(valueOfX));
         }
 
+        // 1.5. factorials
+        for (int i = 0; i < solvedExpression.size(); i++) {
+            if (solvedExpression.get(i) == Operators.FACTORIAL) {
+                try {
+                    solvedExpression.set(i-1, Operators.operate(Operators.FACTORIAL, (double) solvedExpression.get(i-1)));
+                    solvedExpression.remove(i);
+                    i--;
+                } catch (Throwable e) {
+                    throw new CalculationError();
+                }
+            }
+        }
+
         // 2. special functions
         for (int i = 0; i < solvedExpression.size(); i++) {
             if (!(solvedExpression.get(i) instanceof Operators)) continue;
@@ -282,7 +305,11 @@ public class Expression {
                 Operators operator = (Operators) solvedExpression.get(i);
                 try {
                     Double solution = 0d;
-                    if (Operators.argsRequired(operator) == 1) solution = Operators.operate(operator, (Double) solvedExpression.get(i+1));
+                    if (Operators.argsRequired(operator) == 1) {
+                        double calcNumber = (Double) solvedExpression.get(i+1);
+                        if (degreesMode && Operators.isTrig(operator)) calcNumber = Math.toRadians(calcNumber);
+                        solution = Operators.operate(operator, calcNumber);
+                    }
                     else if (Operators.argsRequired(operator) == 2) solution = Operators.operate(operator, (Double) solvedExpression.get(i+1), (Double) solvedExpression.get(i+2));
                     solvedExpression.set(i, solution);
                 } catch (Throwable e) {
@@ -372,7 +399,14 @@ public class Expression {
             System.out.println(this.toStringDebug());
             throw new CalculationError();
         }
-        return (double) solvedExpression.get(0);
+        // round to 10 decimal places
+        double solution = (double) solvedExpression.get(0);
+        if (Double.isFinite(solution)) {
+            solution *= Math.pow(10, 10);
+            solution = Math.round(solution);
+            solution /= Math.pow(10, 10);
+        }
+        return solution;
     }
 
     public String toStringDebug() {
