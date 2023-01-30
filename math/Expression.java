@@ -401,7 +401,7 @@ public class Expression {
         }
 
         if (solvedExpression.size() != 1 || !(solvedExpression.get(0) instanceof Double)) {
-            System.out.println(this.toStringDebug());
+            // System.out.println(this.toStringDebug());
             throw new CalculationError();
         }
         // round to 10 decimal places

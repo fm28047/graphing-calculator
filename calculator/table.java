@@ -89,7 +89,7 @@ public class table {
             // draw empty table
             for (int i = 1; i <= length; i++) {
                 System.out.print(console.setCursor(8 + i, 1) + inputs.get(i-1));
-                System.out.print(console.setCursor(8 + i, longestInput + 1) + " | " + solutions.get(i-1));
+                System.out.print(console.setCursor(8 + i, longestInput + 1) + " | " + solutions.get(i-1) + "                                                      ");
             }
 
 
