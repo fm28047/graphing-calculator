@@ -65,7 +65,6 @@ public class table {
             ArrayList<Double> solutions = new ArrayList<Double>();
 
             int longestInput = 0;
-            String longestInputEmpty = "";
 
             for (int i = 0; i < length; i++) {
                 double xInput = start + (i * deltaX);
@@ -80,8 +79,6 @@ public class table {
                     solutions.add(0d);
                 }
             }
-
-            for (int i = 0; i < longestInput; i++) longestInputEmpty += " ";
 
             System.out.print(console.setCursor(8, 1) + " x");
             System.out.print(console.setCursor(8, longestInput + 1) + " | f(x)");
