@@ -153,5 +153,5 @@ public enum Operators {
             case SINE: case COSINE: case TANGENT: case ARCSIN: case ARCCOS: case ARCTAN: case COSECANT: case SECANT: case COTANGENT: case ARCCSC: case ARCSEC: case ARCCOT: return true;
             default: return false;
         }
-    }    
+    }
 }
